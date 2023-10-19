@@ -5,9 +5,23 @@ namespace Pegasus.API.Models.Repository;
 
 public class CallLogRepository : ICallLogRepository
 {
-    public Task<Result<CallLog>> AddAsync(CallLog callLog)
+    private readonly AppDbContext _context;
+
+    public CallLogRepository(AppDbContext context) => _context = context;
+    
+    public async Task<Result<CallLog>> AddAsync(CallLog callLog)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await _context.CallLogs!.AddAsync(callLog);
+            await _context.SaveChangesAsync();
+
+            return new Result<CallLog>(callLog);
+        }
+        catch (Exception ex)
+        {
+            return new Result<CallLog>(false, $"An error occured:{ex.Message}");
+        }
     }
 
     public Task<Result<IEnumerable<CallLog>>> GetAllAsync()
