@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Pegasus.API.Extensions;
 using Pegasus.API.Models.Data;
 using Pegasus.API.Models.Local;
 using Pegasus.API.Models.Repository;
