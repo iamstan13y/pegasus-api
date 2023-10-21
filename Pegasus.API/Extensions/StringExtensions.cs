@@ -9,6 +9,10 @@ public static class StringExtensions
         return decodedPhoneNumber;
     }
 
-    public static string Sanitize(this string encodedText) => encodedText.Replace("+", " ");
-    
+    public static string Sanitize(this string encodedText)
+    {
+        var decodedText = Uri.UnescapeDataString(encodedText);
+        return decodedText.Replace("+", " ");
+    }
+
 }
