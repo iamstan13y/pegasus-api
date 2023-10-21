@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pegasus.API.Extensions;
 using Pegasus.API.Models.Data;
+using Pegasus.API.Models.Enums;
 using Pegasus.API.Models.Local;
 using Pegasus.API.Models.Repository;
 
@@ -21,7 +22,7 @@ namespace Pegasus.API.Controllers
             {
                 ContactName = request.Contact?.Sanitize(),
                 CallDate = request.Date.ToDateTime(),
-                Direction = request.Direction,
+                Type = ((CallType)request.Direction).ToString(),
                 Duration = request.Duration,
                 Notes = request.Notes?.Sanitize(),
                 PhoneNumber = request.Number?.SanitizePhoneNumber(),
