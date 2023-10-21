@@ -36,8 +36,8 @@ namespace Pegasus.API.Migrations
                     b.Property<string>("ContactName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Direction")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Direction")
+                        .HasColumnType("int");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
