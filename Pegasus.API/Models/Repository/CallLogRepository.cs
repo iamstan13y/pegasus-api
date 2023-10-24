@@ -24,6 +24,21 @@ public class CallLogRepository : ICallLogRepository
         }
     }
 
+    public async Task<Result<string>> AddBulkAsync(List<CallLog> callLogs)
+    {
+        try
+        {
+            await _context.CallLogs!.AddRangeAsync(callLogs);
+            await _context.SaveChangesAsync();
+
+            return new Result<string>("Successfully saved!");
+        }
+        catch (Exception ex)
+        {
+            return new Result<string>(false, $"An error occured:{ex.Message}");
+        }
+    }
+
     public Task<Result<IEnumerable<CallLog>>> GetAllAsync()
     {
         throw new NotImplementedException();
