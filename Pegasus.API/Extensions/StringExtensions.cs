@@ -6,7 +6,7 @@ public static class StringExtensions
     {
         string decodedPhoneNumber = Uri.UnescapeDataString(encodedPhoneNumber);
         decodedPhoneNumber = decodedPhoneNumber.Replace("+", string.Empty);
-        return decodedPhoneNumber;
+        return decodedPhoneNumber.Replace(" ", string.Empty);
     }
 
     public static string Sanitize(this string encodedText)
