@@ -32,5 +32,15 @@ namespace Pegasus.API.Controllers
 
             return Ok(result);
         }
+
+        [HttpPost("/import")]
+        public async Task<IActionResult> PostBulk(List<UnformattedCallLogRequest> request)
+        {
+            var result = await _repository.AddBulkAsync(request.SanitizeData());
+
+            if (!result.Success) return BadRequest(result);
+
+            return Ok(result);
+        }
     }
 }
