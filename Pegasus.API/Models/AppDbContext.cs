@@ -10,4 +10,21 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<CallLog>? CallLogs { get; set; }
+    public DbSet<Contact>? Contacts { get; set; }
+    public DbSet<ContactPhoneNumber>? ContactPhoneNumbers { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Contact>()
+            .HasMany(c => c.PhoneNumbers)
+            .WithOne(pn => pn.Contact)
+            .HasForeignKey(pn => pn.ContactId);
+
+        modelBuilder.Entity<CallLog>()
+            .HasOne(cl => cl.Contact)
+            .WithMany()
+            .HasForeignKey(cl => cl.ContactId);
+
+        base.OnModelCreating(modelBuilder);
+    }
 }
