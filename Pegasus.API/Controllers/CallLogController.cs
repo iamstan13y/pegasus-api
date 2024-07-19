@@ -20,12 +20,12 @@ namespace Pegasus.API.Controllers
         {
             var result = await _repository.AddAsync(new CallLog
             {
-                ContactName = request.Contact?.Sanitize(),
+                //ContactName = request.Contact?.Sanitize(),
                 CallDate = request.Date.ToDateTime(),
-                Type = ((CallType)request.Direction).ToString(),
+                //Type = ((CallType)request.Direction).ToString(),
                 Duration = request.Duration,
                 Notes = request.Notes?.Sanitize(),
-                PhoneNumber = request.Number?.SanitizePhoneNumber(),
+                //PhoneNumber = request.Number?.SanitizePhoneNumber(),
             });
 
             if (!result.Success) return BadRequest(result);
