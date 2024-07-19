@@ -33,8 +33,8 @@ namespace Pegasus.API.Migrations
                     b.Property<DateTime>("CallDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ContactName")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("ContactId")
+                        .HasColumnType("int");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -45,15 +45,78 @@ namespace Pegasus.API.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
 
-                    b.Property<string>("Type")
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("CallLogs");
+                });
+
+            modelBuilder.Entity("Pegasus.API.Models.Data.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("CallLogs");
+                    b.ToTable("Contacts");
+                });
+
+            modelBuilder.Entity("Pegasus.API.Models.Data.ContactPhoneNumber", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ContactId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ContactId");
+
+                    b.ToTable("ContactPhoneNumbers");
+                });
+
+            modelBuilder.Entity("Pegasus.API.Models.Data.CallLog", b =>
+                {
+                    b.HasOne("Pegasus.API.Models.Data.Contact", "Contact")
+                        .WithMany()
+                        .HasForeignKey("ContactId");
+
+                    b.Navigation("Contact");
+                });
+
+            modelBuilder.Entity("Pegasus.API.Models.Data.ContactPhoneNumber", b =>
+                {
+                    b.HasOne("Pegasus.API.Models.Data.Contact", "Contact")
+                        .WithMany("PhoneNumbers")
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Contact");
+                });
+
+            modelBuilder.Entity("Pegasus.API.Models.Data.Contact", b =>
+                {
+                    b.Navigation("PhoneNumbers");
                 });
 #pragma warning restore 612, 618
         }
