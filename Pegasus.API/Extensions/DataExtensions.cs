@@ -14,11 +14,11 @@ public static class DataExtensions
         {
             sanizitedData.Add(new CallLog
             {
-                ContactName = callLog.Contact?.Sanitize(),
-                Type = callLog.Type,
+                //ContactName = callLog.Contact?.Sanitize(),
+                //Type = callLog.Type,
                 CallDate = DateTime.ParseExact($"{callLog.Date} {callLog.Time}", "dd-MMM-yy HH:mm", CultureInfo.InvariantCulture),
                 Duration = callLog.Duration,
-                PhoneNumber = callLog.Number?.SanitizePhoneNumber()
+                //PhoneNumber = callLog.Number?.SanitizePhoneNumber()
             });
         }
 
