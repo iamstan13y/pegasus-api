@@ -14,5 +14,4 @@ public static class StringExtensions
         var decodedText = Uri.UnescapeDataString(encodedText);
         return decodedText.Replace("+", " ");
     }
-
 }
