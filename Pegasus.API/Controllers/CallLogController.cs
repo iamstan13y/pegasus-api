@@ -24,9 +24,9 @@ namespace Pegasus.API.Controllers
         }
 
         [HttpPost("import")]
-        private async Task<IActionResult> PostBulk(List<UnformattedCallLogRequest> request)
+        public async Task<IActionResult> PostBulk(List<UnformattedCallLogRequest> request)
         {
-            var result = await _repository.AddBulkAsync(request.SanitizeData());
+            var result = await _repository.AddBulkAsync(request);
 
             if (!result.Success) return BadRequest(result);
 
