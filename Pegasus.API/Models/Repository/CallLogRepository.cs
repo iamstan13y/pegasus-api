@@ -84,20 +84,87 @@ public class CallLogRepository : ICallLogRepository
     }
 
 
-    public async Task<Result<string>> AddBulkAsync(List<CallLog> callLogs)
+    public async Task<Result<string>> AddBulkAsync(List<UnformattedCallLogRequest> request)
     {
         try
         {
-            await _context.CallLogs!.AddRangeAsync(callLogs);
-            await _context.SaveChangesAsync();
+            var callLogRequests = request.SanitizeData();
+            var callLogs = new List<CallLog>();
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                foreach (var callLogRequest in callLogRequests)
+                {
+                    var contactPhoneNumber = await _context.ContactPhoneNumbers!
+                        .Include(cpn => cpn.Contact)
+                        .FirstOrDefaultAsync(cpn => cpn.PhoneNumber == callLogRequest.Number);
+
+                    Contact? contact = null;
+
+                    if (contactPhoneNumber != null)
+                    {
+                        contact = contactPhoneNumber.Contact;
+                    }
+                    else
+                    {
+                        contact = await _context.Contacts!
+                            .Include(c => c.PhoneNumbers)
+                            .FirstOrDefaultAsync(c => c.Name == callLogRequest.Number);
+
+                        if (contact != null)
+                        {
+                            if (!contact.PhoneNumbers.Any(pn => pn.PhoneNumber == callLogRequest.Number))
+                            {
+                                contact.PhoneNumbers.Add(new ContactPhoneNumber
+                                {
+                                    PhoneNumber = callLogRequest.Number
+                                });
+                            }
+                        }
+                        else
+                        {
+                            contact = new Contact
+                            {
+                                Name = callLogRequest.Contact,
+                                PhoneNumbers = new List<ContactPhoneNumber>
+                            {
+                                new()
+                                {
+                                    PhoneNumber = callLogRequest.Number
+                                }
+                            }
+                            };
+
+                            await _context.Contacts!.AddAsync(contact);
+                        }
+                    }
+
+                    var callLog = new CallLog
+                    {
+                        Contact = contact,
+                        Type = (CallType)callLogRequest.Direction,
+                        CallDate = callLogRequest.Date.ToDateTime(),
+                        Duration = callLogRequest.Duration,
+                        Notes = callLogRequest.Notes?.Sanitize()
+                    };
+
+                    callLogs.Add(callLog);
+                }
+
+                await _context.CallLogs!.AddRangeAsync(callLogs);
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+            }
 
             return new Result<string>("Successfully saved!");
         }
         catch (Exception ex)
         {
-            return new Result<string>(false, $"An error occured:{ex.Message}");
+            // Log the exception here
+            return new Result<string>(false, $"An error occurred: {ex.Message}");
         }
     }
+
 
     public Task<Result<IEnumerable<CallLog>>> GetAllAsync()
     {
