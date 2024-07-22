@@ -9,4 +9,10 @@ public static class DateTimeExtensions
         DateTimeOffset dateTimeOffset = UnixEpoch.AddMilliseconds(timestamp);
         return dateTimeOffset.DateTime.AddHours(2);
     }
+
+    public static long ToUnixTimeStamp(this DateTime dateTime)
+    {
+        DateTimeOffset dateTimeOffset = new(dateTime);
+        return (long)(dateTimeOffset - UnixEpoch).TotalMilliseconds;
+    }
 }
