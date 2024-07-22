@@ -1,4 +1,4 @@
-﻿using Pegasus.API.Models.Data;
+﻿using Pegasus.API.Models.Enums;
 using Pegasus.API.Models.Local;
 using System.Globalization;
 
@@ -6,22 +6,22 @@ namespace Pegasus.API.Extensions;
 
 public static class DataExtensions
 {
-    public static List<CallLog> SanitizeData(this List<UnformattedCallLogRequest> data)
+    public static List<CallLogRequest> SanitizeData(this List<UnformattedCallLogRequest> data)
     {
-        var sanizitedData = new List<CallLog>();
+        var sanitizedData = new List<CallLogRequest>();
 
         foreach (var callLog in data)
         {
-            sanizitedData.Add(new CallLog
+            sanitizedData.Add(new CallLogRequest
             {
-                //ContactName = callLog.Contact?.Sanitize(),
-                //Type = callLog.Type,
-                CallDate = DateTime.ParseExact($"{callLog.Date} {callLog.Time}", "dd-MMM-yy HH:mm", CultureInfo.InvariantCulture),
+                Contact = callLog.Contact?.Sanitize(),
+                Direction = (int)(CallType)Enum.Parse(typeof(CallType), callLog.Type),
+                Date = DateTime.ParseExact($"{callLog.Date} {callLog.Time}", "dd-MMM-yy HH:mm", CultureInfo.InvariantCulture).ToUnixTimeStamp(),
                 Duration = callLog.Duration,
-                //PhoneNumber = callLog.Number?.SanitizePhoneNumber()
+                Number = callLog.Number?.SanitizePhoneNumber()
             });
         }
 
-        return sanizitedData;
+        return sanitizedData;
     }
 }
