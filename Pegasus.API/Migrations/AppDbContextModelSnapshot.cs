@@ -24,17 +24,17 @@ namespace Pegasus.API.Migrations
 
             modelBuilder.Entity("Pegasus.API.Models.Data.CallLog", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<DateTime>("CallDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ContactId")
-                        .HasColumnType("int");
+                    b.Property<long?>("ContactId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("Duration")
                         .HasColumnType("int");
@@ -57,11 +57,11 @@ namespace Pegasus.API.Migrations
 
             modelBuilder.Entity("Pegasus.API.Models.Data.Contact", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -74,14 +74,14 @@ namespace Pegasus.API.Migrations
 
             modelBuilder.Entity("Pegasus.API.Models.Data.ContactPhoneNumber", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
-                    b.Property<int>("ContactId")
-                        .HasColumnType("int");
+                    b.Property<long>("ContactId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
