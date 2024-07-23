@@ -2,8 +2,8 @@
 
 public class ContactPhoneNumber
 {
-    public int Id { get; set; }
+    public long Id { get; set; }
     public string PhoneNumber { get; set; }
-    public int ContactId { get; set; }
+    public long ContactId { get; set; }
     public Contact Contact { get; set; }
 }
