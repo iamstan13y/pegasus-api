@@ -10,6 +10,6 @@ public class CallLog
     public DateTime CallDate { get; set; }
     public int Duration { get; set; }
     public string? Notes { get; set; }
-    public DateTime LogDate { get; set; } = DateTime.Now;
+    public DateTime LogDate { get; set; } = DateTime.UtcNow;
     public Contact? Contact { get; set; }
 }
