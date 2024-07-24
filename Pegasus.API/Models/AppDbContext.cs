@@ -16,14 +16,16 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Contact>()
-            .HasMany(c => c.PhoneNumbers)
-            .WithOne(pn => pn.Contact)
-            .HasForeignKey(pn => pn.ContactId);
+        .HasMany(c => c.PhoneNumbers)
+        .WithOne(pn => pn.Contact)
+        .HasForeignKey(pn => pn.ContactId)
+        .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<CallLog>()
             .HasOne(cl => cl.Contact)
             .WithMany()
-            .HasForeignKey(cl => cl.ContactId);
+            .HasForeignKey(cl => cl.ContactId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }
