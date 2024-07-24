@@ -89,71 +89,65 @@ public class CallLogRepository : ICallLogRepository
         try
         {
             var callLogRequests = request.SanitizeData();
-            var callLogs = new List<CallLog>();
 
-            using (var transaction = await _context.Database.BeginTransactionAsync())
+            foreach (var callLogRequest in callLogRequests)
             {
-                foreach (var callLogRequest in callLogRequests)
+                var contactPhoneNumber = await _context.ContactPhoneNumbers!
+                    .Include(cpn => cpn.Contact)
+                    .FirstOrDefaultAsync(cpn => cpn.PhoneNumber == callLogRequest.Number);
+
+                Contact? contact = null;
+
+                if (contactPhoneNumber != null)
                 {
-                    var contactPhoneNumber = await _context.ContactPhoneNumbers!
-                        .Include(cpn => cpn.Contact)
-                        .FirstOrDefaultAsync(cpn => cpn.PhoneNumber == callLogRequest.Number);
+                    contact = contactPhoneNumber.Contact;
+                }
+                else
+                {
+                    contact = await _context.Contacts!
+                        .Include(c => c.PhoneNumbers)
+                        .FirstOrDefaultAsync(c => c.Name == callLogRequest.Contact);
 
-                    Contact? contact = null;
-
-                    if (contactPhoneNumber != null)
+                    if (contact != null)
                     {
-                        contact = contactPhoneNumber.Contact;
+                        if (!contact.PhoneNumbers.Any(pn => pn.PhoneNumber == callLogRequest.Number))
+                        {
+                            contact.PhoneNumbers.Add(new ContactPhoneNumber
+                            {
+                                PhoneNumber = callLogRequest.Number
+                            });
+                        }
                     }
                     else
                     {
-                        contact = await _context.Contacts!
-                            .Include(c => c.PhoneNumbers)
-                            .FirstOrDefaultAsync(c => c.Name == callLogRequest.Number);
-
-                        if (contact != null)
+                        contact = new Contact
                         {
-                            if (!contact.PhoneNumbers.Any(pn => pn.PhoneNumber == callLogRequest.Number))
-                            {
-                                contact.PhoneNumbers.Add(new ContactPhoneNumber
-                                {
-                                    PhoneNumber = callLogRequest.Number
-                                });
-                            }
-                        }
-                        else
-                        {
-                            contact = new Contact
-                            {
-                                Name = callLogRequest.Contact,
-                                PhoneNumbers = new List<ContactPhoneNumber>
+                            Name = callLogRequest.Contact,
+                            PhoneNumbers = new List<ContactPhoneNumber>
                             {
                                 new()
                                 {
                                     PhoneNumber = callLogRequest.Number
                                 }
                             }
-                            };
+                        };
 
-                            await _context.Contacts!.AddAsync(contact);
-                        }
+                        await _context.Contacts!.AddAsync(contact);
+                        await _context.SaveChangesAsync();
                     }
-
-                    var callLog = new CallLog
-                    {
-                        Contact = contact,
-                        Type = (CallType)callLogRequest.Direction,
-                        CallDate = callLogRequest.Date.ToDateTime(),
-                        Duration = callLogRequest.Duration,
-                        Notes = callLogRequest.Notes?.Sanitize()
-                    };
-
-                    callLogs.Add(callLog);
                 }
 
-                await _context.CallLogs!.AddRangeAsync(callLogs);
+                var callLog = new CallLog
+                {
+                    Contact = contact,
+                    Type = (CallType)callLogRequest.Direction,
+                    CallDate = callLogRequest.Date.ToDateTime(),
+                    Duration = callLogRequest.Duration,
+                    Notes = callLogRequest.Notes?.Sanitize()
+                };
+
+                await _context.CallLogs!.AddAsync(callLog);
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
             }
 
             return new Result<string>("Successfully saved!");
