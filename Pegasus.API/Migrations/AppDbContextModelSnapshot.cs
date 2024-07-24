@@ -98,7 +98,8 @@ namespace Pegasus.API.Migrations
                 {
                     b.HasOne("Pegasus.API.Models.Data.Contact", "Contact")
                         .WithMany()
-                        .HasForeignKey("ContactId");
+                        .HasForeignKey("ContactId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Contact");
                 });
